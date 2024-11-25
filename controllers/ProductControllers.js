@@ -1,5 +1,6 @@
 import Product from "../models/Product.js";
 
+// get products
 export const getProducts = async (req, res) => {
 
     try {
@@ -15,6 +16,7 @@ export const getProducts = async (req, res) => {
     }
 }
 
+// get single product
 export const getSingleProducts = async (req, res) => {
     let id = req.params.id;
 
@@ -34,6 +36,7 @@ export const getSingleProducts = async (req, res) => {
     }
 }
 
+// add a single product
 export const addProduct = async (req, res) => {
 
     const { name, price, description, stockQty } = req.body;
@@ -48,6 +51,7 @@ export const addProduct = async (req, res) => {
     }
 }
 
+// update a product 
 export const updateProduct = async (req, res) => {
     let id = req.params.id;
     try {
@@ -66,7 +70,7 @@ export const updateProduct = async (req, res) => {
     }
 }
 
-
+// delete product 
 export const deleteProduct = async (req, res) => {
     let id = req.params.id;
     try {

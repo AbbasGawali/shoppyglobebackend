@@ -5,6 +5,8 @@ import { validateProduct } from "../utils/validateProduct.js";
 const router = express();
 
 
+// routes for products
+
 router.get("/", getProducts)
 
 router.get("/getSingleProduct/:id", getSingleProducts);

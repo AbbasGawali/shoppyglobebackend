@@ -1,16 +1,21 @@
 import express from "express"
-import { getCartItems, addCartItem, updateCartItem, getSingleCartItem,deleteCartItem } from "../controllers/cartControllers.js"
+import { getCartItems, addCartItem, updateCartItem, getSingleCartItem, deleteCartItem, getAllUsersCart } from "../controllers/cartControllers.js"
+import { checkAuth } from "../utils/checkAuth.js";
 const router = express();
+ 
+// routes for cart
 
-router.get("/cart", getCartItems);
+router.get("/allUserCarts", checkAuth, getAllUsersCart);
 
-router.get("/cart/:id", getSingleCartItem);
+router.post("/addCartItem", checkAuth, addCartItem);
 
-router.get("/addCartItem", addCartItem);
+router.get("/:id", checkAuth, getCartItems);
 
-router.get("/updateCartItem", updateCartItem);
+router.get("/cart/:id", checkAuth, getSingleCartItem);
 
-router.get("/deleteCartItem", deleteCartItem);
+router.put("/updateCartItem/:id", checkAuth, updateCartItem);
+
+router.delete("/deleteCartItem/:id", checkAuth, deleteCartItem);
 
 
 export default router;

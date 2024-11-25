@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import JWT from "jsonwebtoken"
 
+// get all users
 export const getAllUsers = async (req, res) => {
 
     try {
@@ -16,6 +17,7 @@ export const getAllUsers = async (req, res) => {
     }
 }
 
+// get single user
 export const getSingleUser = async (req, res) => {
     let id = req.params.id;
 
@@ -35,6 +37,7 @@ export const getSingleUser = async (req, res) => {
     }
 }
 
+// add user 
 export const addUser = async (req, res) => {
     if (!req.body.name) {
         return res.status(403).json({ success: false, message: "Name is required" });
@@ -53,8 +56,7 @@ export const addUser = async (req, res) => {
 
 
     try {
-
-        console.log(process.env.JWTSECRET)
+        // sign jwt token
         const accessToken = JWT.sign(email, process.env.JWTSECRET);
         const result = await User.create({ name, email, password, address });
         res.status(201).json({ success: true, message: "User added successfully", result: { ...result, accessToken } });
@@ -67,12 +69,9 @@ export const addUser = async (req, res) => {
 }
 
 
-
-
-console.log("jwt sec", process.env.JWTSECRET)
  
 
-
+// update user
 export const updateUser = async (req, res) => {
     let id = req.params.id;
     try {
@@ -91,7 +90,40 @@ export const updateUser = async (req, res) => {
     }
 }
 
+// user login  
+export const loginUser = async (req, res) => {
+    let id = req.params.id;
+    if (!req.body.email) {
+        return res.status(403).json({ success: false, message: "Email is required" });
+    }
+    if (!req.body.password) {
+        return res.status(403).json({ success: false, message: "Password is required" });
+    }
+    const { email, password } = req.body;
+    try {
+        //check for match
+        const isMatch = await User.find({ email: email }); 
+        if (!isMatch) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
 
+        if (isMatch && isMatch[0].password !== password) {
+            return res.status(403).json({ success: false, message: "Invalid credentials" });
+        }
+        // sign jwt token
+        const accessToken = JWT.sign(email, process.env.JWTSECRET);
+        res.status(200).json({ success: true, messge: "User Found", result: { ...isMatch, accessToken } })
+
+
+    } catch (error) {
+
+        console.log(error);
+        return res.status(500).json({ success: false, message: "Server Error" });
+
+    }
+}
+
+// delete user
 export const deleteUser = async (req, res) => {
     let id = req.params.id;
     try {
@@ -99,6 +131,7 @@ export const deleteUser = async (req, res) => {
         if (!isMatch) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
+        // delete using id 
         const result = await User.findByIdAndDelete(id);
         res.status(200).json({ success: true, messge: "User deleted successfully", result })
 

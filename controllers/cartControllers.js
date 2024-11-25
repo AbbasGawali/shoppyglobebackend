@@ -2,7 +2,24 @@ import Product from "../models/Product.js";
 import User from "../models/User.js";
 import UserCart from "../models/UserCart.js";
 
+// get cart items 
 export const getCartItems = async (req, res) => {
+    const uid = req.params.id;
+    try {
+
+        const result = await UserCart.find({ user: uid });
+        res.status(200).json({ success: true, messge: "All Cart Item List", result })
+
+    } catch (error) {
+
+        console.log(error);
+        return res.status(500).json({ success: false, message: "Server Error" });
+
+    }
+}
+
+// get all users cart items
+export const getAllUsersCart = async (req, res) => {
     try {
 
         const result = await UserCart.find();
@@ -16,7 +33,7 @@ export const getCartItems = async (req, res) => {
     }
 }
 
-
+// get singlecart item
 export const getSingleCartItem = async (req, res) => {
     let id = req.params.id;
 
@@ -37,7 +54,7 @@ export const getSingleCartItem = async (req, res) => {
 }
 
 
-
+// add cart item
 export const addCartItem = async (req, res) => {
     if (!req.body.user) {
         return res.status(403).json({ success: false, message: "User is required" });
@@ -54,7 +71,7 @@ export const addCartItem = async (req, res) => {
     try {
         //check this
         const isMatch = await Product.findById(product);
-        const isUserMatch = await User.findById(product);
+        const isUserMatch = await User.findById(user);
 
         if (!isUserMatch) {
             return res.status(404).json({ success: false, message: "User not found" });
@@ -73,19 +90,25 @@ export const addCartItem = async (req, res) => {
     }
 
 }
-
+//  update cart item
 export const updateCartItem = async (req, res) => {
-    let id = req.params.id;
+    let cartItemId = req.params.id;
     try {
-        const isMatch = await UserCart.findById(id);
+        const isMatch = await UserCart.findById(cartItemId);
+        let userMatch = await User.find({ email: req.user });
+
         if (!isMatch) {
             return res.status(404).json({ success: false, message: "Cart Item not found" });
         }
-        const result = await UserCart.findByIdAndUpdate(id, req.body, { new: true });
-        res.status(200).json({ success: true, messge: "Cart Item updated successfully", result })
+        //  the user should match with the cartitem to update it 
+        if (isMatch.user.toString() == userMatch[0]._id.toString()) { 
+            const result = await UserCart.findByIdAndUpdate(cartItemId, req.body, { new: true });
+            res.status(200).json({ success: true, messge: "Cart Item updated successfully", result })
+        } else {
+            return res.status(403).json({ success: false, message: "Unauthorise access" });
+        }
 
     } catch (error) {
-
         console.log(error);
         return res.status(500).json({ success: false, message: "Server Error" });
 
@@ -93,18 +116,29 @@ export const updateCartItem = async (req, res) => {
 
 }
 
+// delete cart item
 export const deleteCartItem = async (req, res) => {
     let id = req.params.id;
+
     try {
+        let userMatch = await User.find({ email: req.user });
+
         const isMatch = await UserCart.findById(id);
+
         if (!isMatch) {
             return res.status(404).json({ success: false, message: "Cart Item not found" });
         }
-        const result = await UserCart.findByIdAndDelete(id);
-        res.status(200).json({ success: true, messge: "Cart Item deleted successfully", result })
+
+        
+        //  the user should match with the cartitem to delete it 
+        if (isMatch.user.toString() == userMatch[0]._id.toString()) {
+            const result = await UserCart.findByIdAndDelete(id);
+            res.status(200).json({ success: true, messge: "Cart Item deleted successfully", result });
+        } else {
+            return res.status(403).json({ success: false, message: "Unauthorise access" });
+        }
 
     } catch (error) {
-
         console.log(error);
         return res.status(500).json({ success: false, message: "Server Error" });
 

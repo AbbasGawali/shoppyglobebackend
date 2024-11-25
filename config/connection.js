@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 
 import dotenv from "dotenv"
 dotenv.config()
-
+// establish a connection 
 mongoose.connect(process.env.MONGOURL, { dbName: "shoppyGlobeBackend" }).then(() => {
     console.log("connection success");
 }).catch((err) => {

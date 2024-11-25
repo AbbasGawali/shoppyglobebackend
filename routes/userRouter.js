@@ -1,18 +1,22 @@
 import express from "express"
-import { addUser, deleteUser, getAllUsers, getSingleUser, updateUser } from "../controllers/userControllers.js";
- 
+import { addUser, deleteUser, getAllUsers, getSingleUser, loginUser, updateUser } from "../controllers/userControllers.js";
+import { checkAuth } from "../utils/checkAuth.js";
+
 const router = express();
 
+// routs for users
 
 router.get("/", getAllUsers);
 
 router.get("/user/:id", getSingleUser);
 
-router.get("/addUser", addUser);
+router.post("/addUser", addUser);
 
-router.get("/updateUser", updateUser);
+router.put("/updateUser/:id", updateUser);
 
-router.get("/deleteUser", deleteUser);
+router.post("/loginUser/:id", loginUser);
+
+router.delete("/deleteUser/:id", checkAuth, deleteUser);
 
 
 

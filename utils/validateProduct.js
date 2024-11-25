@@ -1,3 +1,6 @@
+
+// middleware for product validation 
+
 export const validateProduct = (req, res, next) => {
 
     if (!req.body.name) {
